@@ -33,6 +33,10 @@ python setup.py install"
 
 ADD ./init_jupyter/* /init_jupyter/
 
+# starting container process caused "exec: \"./extra/service_startup.sh\": permission denied" · Issue #431 · facebook/fbctf 
+# https://github.com/facebook/fbctf/issues/431
+RUN chmod -x /init_jupyter/*
+
 ENTRYPOINT ["/init_jupyter/jupyter_init.sh"]
 
 CMD ["bash"]
