@@ -1,10 +1,10 @@
 #!/bin/bash
-
 XSOCK=/tmp/.X11-unix
 XAUTH=/tmp/.docker.xauth
 xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
 
 PSWD=$1
+NOTEBOOK_DIR=$2
 
 docker run -ti \
     --name anaconda \
@@ -14,5 +14,6 @@ docker run -ti \
     --env PASSWORD=$PSWD \
     --volume $XSOCK:$XSOCK \
     --volume $XAUTH:$XAUTH \
-    --volume $PWD/project/jupyter/notebooks:/opt/notebooks \
+    --volume $NOTEBOOK_DIR:/opt/notebooks \
+    --restart always \
     allenyllee/condad:latest
