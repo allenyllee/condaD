@@ -15,4 +15,4 @@ docker run -ti \
     --volume $XSOCK:$XSOCK \
     --volume $XAUTH:$XAUTH \
     --volume $PWD/project/jupyter/notebooks:/opt/notebooks \
-    allenyllee/anaconda:latest
+    allenyllee/condad:latest
