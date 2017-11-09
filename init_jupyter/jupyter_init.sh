@@ -16,7 +16,7 @@ then
     echo "starting jupyter..."
     /opt/conda/bin/jupyter notebook --allow-root --notebook-dir=/opt/notebooks --ip='*' --port=8888 --no-browser
 else
-    #echo "install libs..."
+    echo "install libs..."
     $SOURCE_DIR/install_libs.sh
     echo "install jupyter..."
     /opt/conda/bin/conda install jupyter -y --quiet
