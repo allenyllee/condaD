@@ -30,6 +30,9 @@ cd dlib/ && \
 python setup.py install"
 # python setup.py install --yes USE_AVX_INSTRUCTIONS && \
 
+# install opencv
+RUN conda install -c conda-forge -y opencv
+
 
 ADD ./init_jupyter/* /init_jupyter/
 
