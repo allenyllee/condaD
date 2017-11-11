@@ -3,6 +3,21 @@ XSOCK=/tmp/.X11-unix
 XAUTH_DIR=/tmp/.docker.xauth
 XAUTH=$XAUTH_DIR/.xauth
 
+##############################
+# run GUI app in docker with Xauthority file (without using xhost +local:root)
+# https://stackoverflow.com/a/25280523/1851492
+#
+# docker/Tutorials/GUI - ROS Wiki 
+# http://wiki.ros.org/docker/Tutorials/GUI
+#
+# you need to mount volume /tmp/.docker.xauth and 
+# set environment vaiable XAUTHORITY=/tmp/.docker.xauth 
+# in your docker run command
+# 
+# --volume=/tmp/.docker.xauth:/tmp/.docker.xauth:rw
+# --env="XAUTHORITY=/tmp/.docker.xauth"
+###############################
+
 # set .docker.xauth after login, becasue /tmp will be deleted everytime system startup
 # filesystem - How is the /tmp directory cleaned up? - Ask Ubuntu 
 # https://askubuntu.com/questions/20783/how-is-the-tmp-directory-cleaned-up
