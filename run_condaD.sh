@@ -1,7 +1,7 @@
 #!/bin/bash
 XSOCK=/tmp/.X11-unix
 XAUTH_DIR=/tmp/.docker.xauth
-XAUTH=.xauth
+XAUTH=$XAUTH_DIR/.xauth
 
 # set .docker.xauth after login, becasue /tmp will be deleted everytime system startup
 # filesystem - How is the /tmp directory cleaned up? - Ask Ubuntu 
@@ -9,13 +9,13 @@ XAUTH=.xauth
 # 
 
 # workflow:
-#       1. To avoid docker daemon automatically create a /tmp/.docker.xauth/ directory, 
-#           insert a item which is to create /temp/.docker.xauth/ directory 
+#       1. To avoid docker automatically create a $XAUTH_DIR directory before it mount, 
+#           insert a command which is to create $XAUTH_DIR directory 
 #           with mod 777 (read/write for all user) into /etc/rc.local.
 #           Because /etc/rc.local will execute at the end of runlevel which before docker service start, 
 #           this is a good point to place it.
-#       2. After docker daemon start, it will mount /tmp/.docker.xauth/ if needed. 
-#       3. After login, system will execute ~/.profile to setup /tmp/.docker.xauth/.xauth file
+#       2. After docker daemon start, it will mount $XAUTH_DIR if needed. 
+#       3. After system login, it will execute ~/.profile to setup $XAUTH_DIR/.xauth file
 
 # 1. Use tr to swap the newline character to NUL character.
 #       NUL (\000 or \x00) is nice because it doesn't need UTF-8 support and it's not likely to be used.
@@ -34,7 +34,7 @@ XAUTH_DIR=/tmp/.docker.xauth; sudo rm -rf $XAUTH_DIR; install -m 777 -d $XAUTH_D
 tr '\n' '\000' < ~/.profile | sudo tee ~/.profile >/dev/null
 sed -i 's|\x00XAUTH_DIR=.*-\x00|\x00|' ~/.profile
 tr '\000' '\n' < ~/.profile | sudo tee ~/.profile >/dev/null
-echo "XAUTH_DIR=/tmp/.docker.xauth; XAUTH=.xauth; touch \$XAUTH_DIR/\$XAUTH; xauth nlist \$DISPLAY | sed -e 's/^..../ffff/' | xauth -f \$XAUTH_DIR/\$XAUTH nmerge -" >> ~/.profile
+echo "XAUTH_DIR=/tmp/.docker.xauth; XAUTH=\$XAUTH_DIR/.xauth; touch \$XAUTH; xauth nlist \$DISPLAY | sed -e 's/^..../ffff/' | xauth -f \$XAUTH nmerge -" >> ~/.profile
 source ~/.profile
 
 
@@ -45,7 +45,7 @@ nvidia-docker run -ti \
     --name anaconda \
     --publish 8889:8888 \
     --env DISPLAY=$DISPLAY \
-    --env XAUTHORITY=$XAUTH_DIR/$XAUTH \
+    --env XAUTHORITY=$XAUTH \
     --env PASSWORD=$PSWD \
     --volume $XSOCK:$XSOCK \
     --volume $XAUTH_DIR:$XAUTH_DIR \
