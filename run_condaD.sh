@@ -3,6 +3,17 @@ XSOCK=/tmp/.X11-unix
 XAUTH_DIR=/tmp/.docker.xauth
 XAUTH=$XAUTH_DIR/.xauth
 
+# Usage
+# 
+# ./run_condad.sh [port] [password] [notebook_dir]
+# 
+#     [port] is the local port you want to open to access jupyter notebook
+#     [password] is the password of your jupyter notebook.
+#     [notebook_dir] is the local dir your notebook files located
+#     After container started, just open URL http://localhost:[port]
+# 
+
+
 ##############################
 # run GUI app in docker with Xauthority file (without using xhost +local:root)
 # https://stackoverflow.com/a/25280523/1851492
@@ -52,13 +63,13 @@ tr '\000' '\n' < ~/.profile | sudo tee ~/.profile >/dev/null
 echo "XAUTH_DIR=/tmp/.docker.xauth; XAUTH=\$XAUTH_DIR/.xauth; touch \$XAUTH; xauth nlist \$DISPLAY | sed -e 's/^..../ffff/' | xauth -f \$XAUTH nmerge -" >> ~/.profile
 source ~/.profile
 
-
-PSWD=$1
-NOTEBOOK_DIR=$2
+PORT=$1
+PSWD=$2
+NOTEBOOK_DIR=$3
 
 nvidia-docker run -ti \
     --name anaconda \
-    --publish 8889:8888 \
+    --publish $PORT:8888 \
     --env DISPLAY=$DISPLAY \
     --env XAUTHORITY=$XAUTH \
     --env PASSWORD=$PSWD \
