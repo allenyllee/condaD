@@ -33,6 +33,9 @@ python setup.py install"
 # install opencv
 RUN conda install -c conda-forge -y opencv
 
+# install mesa-utils for glxgear
+RUN apt install -y mesa-utils
+
 
 ADD ./init_jupyter/* /init_jupyter/
 
