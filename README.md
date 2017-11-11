@@ -1,28 +1,32 @@
 Usage
 ==========
-Save below script as file named __run_condad.sh__, then execute: 
-```
+
+Save below script as file named __run_condad.sh__, then execute:
+
+```sh
   ./run_condad.sh [port] [password] [notebook_dir]
 ```
+
 * [port] is the local port you want to open to access jupyter notebook
 * [password] is the password of your jupyter notebook.
 * [notebook_dir] is the local dir your notebook files located
-* After container started, just open URL http://localhost:[port]
+* After container started, just open URL [http://localhost:[port]](http://localhost:[port])
 
 Script
-==========
-```
+-----------
+
+```sh
 #!/bin/bash
 
 # Usage
-# 
+#
 # ./run_condad.sh [port] [password] [notebook_dir]
-# 
+#
 #     [port] is the local port you want to open to access jupyter notebook
 #     [password] is the password of your jupyter notebook.
 #     [notebook_dir] is the local dir your notebook files located
 #     After container started, just open URL http://localhost:[port]
-# 
+#
 
 PORT=$1
 PSWD=$2
@@ -38,23 +42,23 @@ NOTEBOOK_DIR=$3
 # you need to mount volume /tmp/.docker.xauth and 
 # set environment vaiable XAUTHORITY=/tmp/.docker.xauth 
 # in your docker run command
-# 
+#
 # --volume=/tmp/.docker.xauth:/tmp/.docker.xauth:rw
 # --env="XAUTHORITY=/tmp/.docker.xauth"
 ###############################
 
 # set .docker.xauth after login, becasue /tmp will be deleted everytime system startup
-# filesystem - How is the /tmp directory cleaned up? - Ask Ubuntu 
+# filesystem - How is the /tmp directory cleaned up? - Ask Ubuntu
 # https://askubuntu.com/questions/20783/how-is-the-tmp-directory-cleaned-up
-# 
+#
 
 # workflow:
-#       1. To avoid docker automatically create a $XAUTH_DIR directory before it mount, 
-#           insert a command which is to create $XAUTH_DIR directory 
+#       1. To avoid docker automatically create a $XAUTH_DIR directory before it mount,
+#           insert a command which is to create $XAUTH_DIR directory
 #           with mod 777 (read/write for all user) into /etc/rc.local.
-#           Because /etc/rc.local will execute at the end of runlevel which before docker service start, 
+#           Because /etc/rc.local will execute at the end of runlevel which before docker service start,
 #           this is a good point to place it.
-#       2. After docker daemon start, it will mount $XAUTH_DIR if needed. 
+#       2. After docker daemon start, it will mount $XAUTH_DIR if needed.
 #       3. After system login, it will execute ~/.profile to setup $XAUTH_DIR/.xauth file
 
 XSOCK=/tmp/.X11-unix
@@ -95,4 +99,3 @@ nvidia-docker run -ti \
     allenyllee/condad:latest
 
 ```
-
