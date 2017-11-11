@@ -1,7 +1,4 @@
 #!/bin/bash
-XSOCK=/tmp/.X11-unix
-XAUTH_DIR=/tmp/.docker.xauth
-XAUTH=$XAUTH_DIR/.xauth
 
 # Usage
 # 
@@ -13,6 +10,9 @@ XAUTH=$XAUTH_DIR/.xauth
 #     After container started, just open URL http://localhost:[port]
 # 
 
+PORT=$1
+PSWD=$2
+NOTEBOOK_DIR=$3
 
 ##############################
 # run GUI app in docker with Xauthority file (without using xhost +local:root)
@@ -43,6 +43,10 @@ XAUTH=$XAUTH_DIR/.xauth
 #       2. After docker daemon start, it will mount $XAUTH_DIR if needed. 
 #       3. After system login, it will execute ~/.profile to setup $XAUTH_DIR/.xauth file
 
+XSOCK=/tmp/.X11-unix
+XAUTH_DIR=/tmp/.docker.xauth
+XAUTH=$XAUTH_DIR/.xauth
+
 # 1. Use tr to swap the newline character to NUL character.
 #       NUL (\000 or \x00) is nice because it doesn't need UTF-8 support and it's not likely to be used.
 # 2. Use sed to match the string
@@ -63,9 +67,6 @@ tr '\000' '\n' < ~/.profile | sudo tee ~/.profile >/dev/null
 echo "XAUTH_DIR=/tmp/.docker.xauth; XAUTH=\$XAUTH_DIR/.xauth; touch \$XAUTH; xauth nlist \$DISPLAY | sed -e 's/^..../ffff/' | xauth -f \$XAUTH nmerge -" >> ~/.profile
 source ~/.profile
 
-PORT=$1
-PSWD=$2
-NOTEBOOK_DIR=$3
 
 nvidia-docker run -ti \
     --name anaconda \
