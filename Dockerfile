@@ -36,6 +36,9 @@ RUN conda install -c conda-forge -y opencv
 # install mesa-utils for glxgear
 RUN apt install -y mesa-utils
 
+# TODO:
+#   add virtualgl to run glxgear 
+# 
 
 ADD ./init_jupyter/* /init_jupyter/
 
