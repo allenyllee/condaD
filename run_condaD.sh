@@ -71,11 +71,13 @@ source ~/.profile
 nvidia-docker run -ti \
     --name anaconda \
     --publish $PORT:8888 \
+    --publish 66:22 \
     --env DISPLAY=$DISPLAY \
     --env XAUTHORITY=$XAUTH \
     --env PASSWORD=$PSWD \
     --volume $XSOCK:$XSOCK \
     --volume $XAUTH_DIR:$XAUTH_DIR \
     --volume $NOTEBOOK_DIR:/opt/notebooks \
+    --device /dev/video0:/dev/video0 `# for webcam` \
     --restart always \
     allenyllee/condad:latest

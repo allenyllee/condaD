@@ -3,6 +3,8 @@
 # source directory of this script
 SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# start ssh
+service ssh start
 
 #
 # continuumio/anaconda3 - Docker Hub
