@@ -123,9 +123,9 @@ RUN apt upgrade -y
 ##############
 # debian - clear apt-get list - Unix & Linux Stack Exchange 
 # https://unix.stackexchange.com/questions/217369/clear-apt-get-list
-RUN apt autoremove && \
-    apt clean && \
-    rm /var/lib/apt/lists/*
+RUN apt-get autoremove && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 #################
 # init script
