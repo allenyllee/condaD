@@ -116,7 +116,7 @@ RUN echo 'export PATH=/usr/local/nvidia/bin:$PATH' >> /etc/profile.d/nvidia.sh &
 ##############
 # upgrade
 ##############
-RUN apt upgrade
+RUN apt upgrade -y
 
 ##############
 # cleanup
