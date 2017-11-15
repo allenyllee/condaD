@@ -36,11 +36,11 @@ NOTEBOOK_DIR=$3
 # run GUI app in docker with Xauthority file (without using xhost +local:root)
 # https://stackoverflow.com/a/25280523/1851492
 #
-# docker/Tutorials/GUI - ROS Wiki 
+# docker/Tutorials/GUI - ROS Wiki
 # http://wiki.ros.org/docker/Tutorials/GUI
 #
-# you need to mount volume /tmp/.docker.xauth and 
-# set environment vaiable XAUTHORITY=/tmp/.docker.xauth 
+# you need to mount volume /tmp/.docker.xauth and
+# set environment vaiable XAUTHORITY=/tmp/.docker.xauth
 # in your docker run command
 #
 # --volume=/tmp/.docker.xauth:/tmp/.docker.xauth:rw
@@ -89,12 +89,14 @@ source ~/.profile
 nvidia-docker run -ti \
     --name anaconda \
     --publish $PORT:8888 \
+    --publish 66:22 \
     --env DISPLAY=$DISPLAY \
     --env XAUTHORITY=$XAUTH \
     --env PASSWORD=$PSWD \
     --volume $XSOCK:$XSOCK \
     --volume $XAUTH_DIR:$XAUTH_DIR \
     --volume $NOTEBOOK_DIR:/opt/notebooks \
+    --device /dev/video0:/dev/video0 `# for webcam` \
     --restart always \
     allenyllee/condad:latest
 
