@@ -89,7 +89,7 @@ RUN echo root:root | chpasswd
 #
 RUN useradd -m guest -s /bin/bash && \
     echo guest:guest | chpasswd && \
-    usermod -a -G video guest '# grant access to video device'
+    usermod -a -G video guest `# grant access to video device`
 
 
 # first start to preserve all SSH host keys
@@ -158,6 +158,10 @@ RUN apt upgrade -y
 ##############
 # debian - clear apt-get list - Unix & Linux Stack Exchange
 # https://unix.stackexchange.com/questions/217369/clear-apt-get-list
+# 
+# bash - autoremove option doesn't work with apt alias - Ask Ubuntu
+# https://askubuntu.com/questions/573624/autoremove-option-doesnt-work-with-apt-alias
+# 
 RUN apt-get autoremove && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
