@@ -38,6 +38,7 @@ git clone https://github.com/davisking/dlib.git && \
 cd dlib/ && \
 python setup.py install && \
 `# python setup.py install --yes USE_AVX_INSTRUCTIONS &&` \
+`# python setup.py install --yes DLIB_USE_CUDA` \
 cd / && rm -rf /root/project"
 
 
