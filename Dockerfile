@@ -2,7 +2,7 @@
 #
 # VERSION               0.0.1
 
-FROM      continuumio/anaconda3
+FROM      allenyllee/anaconda3-gpu
 LABEL     maintainer="allen7575@gmail.com"
 
 ############
