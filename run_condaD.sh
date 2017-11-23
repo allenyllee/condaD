@@ -78,6 +78,6 @@ nvidia-docker run -ti \
     --volume $XSOCK:$XSOCK \
     --volume $XAUTH_DIR:$XAUTH_DIR \
     --volume $NOTEBOOK_DIR:/opt/notebooks \
-    --device /dev/video0:/dev/video0 `# for webcam` \
+    `#--device /dev/video0:/dev/video0 # for webcam` \
     --restart always \
     allenyllee/condad:latest
