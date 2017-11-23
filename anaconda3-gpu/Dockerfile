@@ -1,4 +1,4 @@
-FROM nvidia/cuda:8.0-cudnn7-devel-ubuntu16.04
+FROM allenyllee/cuda80-fix-ssh
 
 MAINTAINER Kamil Kwiek <kamil.kwiek@continuum.io>
 
