@@ -1,4 +1,4 @@
-FROM allenyllee/cuda80-fix-ssh
+FROM allenyllee/cuda80-fix
 
 MAINTAINER Kamil Kwiek <kamil.kwiek@continuum.io>
 
