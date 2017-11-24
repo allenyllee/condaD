@@ -11,7 +11,7 @@ LABEL     maintainer="allen7575@gmail.com"
 RUN apt update
 
 ###########
-# instal dlib
+# install dlib
 ###########
 
 # Install Dlib on Ubuntu | Learn OpenCV
@@ -99,7 +99,13 @@ RUN service ssh start
 # set $DISPLAY env variable for ssh login session
 #RUN echo 'export DISPLAY=:0' >> /etc/profile.d/ssh.sh
 
+###############
+# install sshfs
+###############
+RUN apt install -y sshfs
 
+# make dir for reverse sshfs use
+RUN mkdir ~/client-sshfs-project
 
 ###################
 # install VirtualGL
@@ -159,10 +165,10 @@ RUN apt upgrade -y
 ##############
 # debian - clear apt-get list - Unix & Linux Stack Exchange
 # https://unix.stackexchange.com/questions/217369/clear-apt-get-list
-# 
+#
 # bash - autoremove option doesn't work with apt alias - Ask Ubuntu
 # https://askubuntu.com/questions/573624/autoremove-option-doesnt-work-with-apt-alias
-# 
+#
 RUN apt-get autoremove && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
