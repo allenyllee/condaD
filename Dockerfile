@@ -10,6 +10,23 @@ LABEL     maintainer="allen7575@gmail.com"
 ############
 RUN apt update
 
+##############################
+#########################
+## Tools
+#########################
+##############################
+
+##########
+# install vim
+##########
+RUN apt install -y vim
+
+##############################
+#########################
+## Libraries
+#########################
+##############################
+
 ###########
 # install dlib
 ###########
@@ -47,15 +64,12 @@ cd / && rm -rf /root/project"
 ###########
 RUN conda install -c conda-forge -y opencv
 
-##########
-# install vim
-##########
-RUN apt install -y vim
 
-#############
-# install xeyes, xclock
-#############
-RUN apt install -y x11-apps
+##############################
+#########################
+## ssh daemon
+#########################
+##############################
 
 ##############
 # install ssh
@@ -107,6 +121,17 @@ RUN apt install -y sshfs
 # make dir for reverse sshfs use
 RUN mkdir ~/client-sshfs-project
 
+##############################
+#########################
+## X11 forward GUI
+#########################
+##############################
+
+#############
+# install xeyes, xclock
+#############
+RUN apt install -y x11-apps
+
 ###################
 # install VirtualGL
 ###################
@@ -134,6 +159,12 @@ RUN apt install -y libxv1
 # https://cdn.rawgit.com/VirtualGL/virtualgl/2.5.2/doc/index.html#hd006001
 #RUN /opt/VirtualGL/bin/vglserver_config -config +s +f -t
 
+
+##############################
+#########################
+## nvidia-docker
+#########################
+##############################
 
 ####################
 # nvidia-docker links
