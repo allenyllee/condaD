@@ -4,13 +4,21 @@ Usage
 Save below script as file named __run_condad.sh__, then execute:
 
 ```sh
-  ./run_condad.sh [port] [password] [notebook_dir]
+  ./run_condad.sh [port] [password] [notebook_dir] [use_gpu]
 ```
 
 * [port] is the local port you want to open to access jupyter notebook
 * [password] is the password of your jupyter notebook.
 * [notebook_dir] is the local dir your notebook files located
+* [use_gpu] is to specify if gpu support image to use or not, if yes, just type gpu, or left it blank.
+
 * After container started, just open URL [http://localhost:[port]](http://localhost:[port])
+* Also, you can ssh into container with port 66 (for defalut image) or port 67 (for gpu image)
+
+```sh
+       ssh -X -t root@localhost -p 66
+       ssh -X -t root@localhost -p 67
+```
 
 Script
 -----------
@@ -20,17 +28,37 @@ Script
 
 # Usage
 #
-# ./run_condad.sh [port] [password] [notebook_dir]
+# ./run_condad.sh [port] [password] [notebook_dir] [use_gpu]
 #
-#     [port] is the local port you want to open to access jupyter notebook
-#     [password] is the password of your jupyter notebook.
-#     [notebook_dir] is the local dir your notebook files located
-#     After container started, just open URL http://localhost:[port]
+#       [port] is the local port you want to open to access jupyter notebook
+#       [password] is the password of your jupyter notebook.
+#       [notebook_dir] is the local dir your notebook files located
+#       [use_gpu] is to specify if gpu support image to use or not, if yes, just type gpu, or left it blank.
 #
+# After container started, just open URL http://localhost:[port]
+# Also, you can ssh into container with port 66 (for defalut image) or port 67 (for gpu image)
+#   ex:
+#       ssh -X -t root@localhost -p 66
+#       ssh -X -t root@localhost -p 67
+
 
 PORT=$1
 PSWD=$2
 NOTEBOOK_DIR=$3
+USE_GPU=$4
+
+
+if [ "$USE_GPU" = "gpu" ]
+then
+    echo "use gpu image"
+    IMAGE="allenyllee/condad-gpu:latest" # gpu support image
+    SSH_PORT=67 # gpu ssh port
+else
+    echo "use cpu image"
+    IMAGE="allenyllee/condad:latest"  #default image (cpu only)
+    SSH_PORT=66 # default ssh port
+fi
+
 
 ##############################
 # run GUI app in docker with Xauthority file (without using xhost +local:root)
@@ -89,15 +117,15 @@ source ~/.profile
 nvidia-docker run -ti \
     --name anaconda \
     --publish $PORT:8888 \
-    --publish 66:22 \
+    --publish $SSH_PORT:22 \
     --env DISPLAY=$DISPLAY \
     --env XAUTHORITY=$XAUTH \
     --env PASSWORD=$PSWD \
     --volume $XSOCK:$XSOCK \
     --volume $XAUTH_DIR:$XAUTH_DIR \
     --volume $NOTEBOOK_DIR:/opt/notebooks \
-    --device /dev/video0:/dev/video0 `# for webcam` \
+    `#--device /dev/video0:/dev/video0 # for webcam` \
     --restart always \
-    allenyllee/condad:latest
+    $IMAGE
 
 ```

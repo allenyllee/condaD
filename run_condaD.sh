@@ -4,11 +4,16 @@
 #
 # ./run_condad.sh [port] [password] [notebook_dir] [use_gpu]
 #
-#     [port] is the local port you want to open to access jupyter notebook
-#     [password] is the password of your jupyter notebook.
-#     [notebook_dir] is the local dir your notebook files located
-#     After container started, just open URL http://localhost:[port]
+#       [port] is the local port you want to open to access jupyter notebook
+#       [password] is the password of your jupyter notebook.
+#       [notebook_dir] is the local dir your notebook files located
+#       [use_gpu] is to specify if gpu support image to use or not, if yes, just type gpu, or left it blank.
 #
+# After container started, just open URL http://localhost:[port]
+# Also, you can ssh into container with port 66 (for defalut image) or port 67 (for gpu image)
+#   ex:
+#       ssh -X -t root@localhost -p 66
+#       ssh -X -t root@localhost -p 67
 
 
 PORT=$1
