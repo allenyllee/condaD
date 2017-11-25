@@ -124,7 +124,7 @@ nvidia-docker stop $CONTAINER_NAME && \
 nvidia-docker rm $CONTAINER_NAME
 
 # run new container
-nvidia-docker run -ti \
+nvidia-docker run -ti -d \
     --name $CONTAINER_NAME \
     --publish $HTTP_PORT:8888 \
     --publish $SSH_PORT:22 \
