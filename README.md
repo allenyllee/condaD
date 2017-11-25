@@ -123,6 +123,9 @@ source ~/.profile
 nvidia-docker stop $CONTAINER_NAME && \
 nvidia-docker rm $CONTAINER_NAME
 
+# pull latest image
+nvidia-docker pull $IMAGE
+
 # run new container
 nvidia-docker run -ti -d \
     --name $CONTAINER_NAME \
