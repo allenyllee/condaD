@@ -123,7 +123,7 @@ RUN mkdir ~/client-sshfs-project
 
 ##############################
 #########################
-## X11 forward GUI
+## X11 GUI
 #########################
 ##############################
 
@@ -138,6 +138,22 @@ RUN apt install -y x11-apps
 # nvidia-virtualgl/Dockerfile at master · plumbee/nvidia-virtualgl
 # https://github.com/plumbee/nvidia-virtualgl/blob/master/Dockerfile
 
+#
+# install glxgears
+# How to Check 3D Acceleration (FPS) in Ubuntu/Linux Mint
+# http://www.upubuntu.com/2013/11/how-to-check-3d-acceleration-fps-in.html
+#
+# use following command to check
+# export LIBGL_DEBUG=verbose && glxgears
+#
+# How can i deal with 'libGL error: failed to load driver: swrast.' · Issue #509 · openai/gym
+# https://github.com/openai/gym/issues/509
+#
+# Based on the dockerfile of nvidia/cuda, I can solve this problem.
+# https://gitlab.com/nvidia/cuda/blob/ubuntu16.04/8.0/runtime/Dockerfile
+#
+# Or you can just use it with nvidia-docker to create another container run all the stuff without touching your OS environments.
+#
 # install mesa-utils for testing glxgear
 RUN apt install -y mesa-utils
 
