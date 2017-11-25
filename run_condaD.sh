@@ -2,34 +2,37 @@
 
 # Usage
 #
-# ./run_condad.sh [port] [password] [notebook_dir] [use_gpu]
+# ./run_condad.sh [password] [notebook_dir] [use_gpu]
 #
-#       [port] is the local port you want to open to access jupyter notebook
 #       [password] is the password of your jupyter notebook.
 #       [notebook_dir] is the local dir your notebook files located
 #       [use_gpu] is to specify if gpu support image to use or not, if yes, just type gpu, or left it blank.
 #
-# After container started, just open URL http://localhost:[port]
+# After container started, just open
+#       http://localhost:8889 (default image) or
+#       http://localhost:8890 (gpu support image)
 # Also, you can ssh into container with port 66 (for defalut image) or port 67 (for gpu image)
 #   ex:
 #       ssh -X -t root@localhost -p 66
 #       ssh -X -t root@localhost -p 67
 
 
-PORT=$1
-PSWD=$2
-NOTEBOOK_DIR=$3
-USE_GPU=$4
+
+PSWD=$1
+NOTEBOOK_DIR=$2
+USE_GPU=$3
 
 
 if [ "$USE_GPU" = "gpu" ]
 then
     echo "use gpu image"
+    HTTP_PORT=8890
     CONTAINER_NAME="condad-gpu"
     IMAGE="allenyllee/condad-gpu:latest" # gpu support image
     SSH_PORT=67 # gpu ssh port
 else
     echo "use cpu image"
+    HTTP_PORT=8889
     CONTAINER_NAME="condad"
     IMAGE="allenyllee/condad:latest"  #default image (cpu only)
     SSH_PORT=66 # default ssh port
@@ -91,11 +94,12 @@ source ~/.profile
 
 # remove previous container
 nvidia-docker stop $CONTAINER_NAME && \
-nvidia-docker rm $CONTAINER_NAME && \
-`# run new container` && \
+nvidia-docker rm $CONTAINER_NAME
+
+# run new container
 nvidia-docker run -ti \
     --name $CONTAINER_NAME \
-    --publish $PORT:8888 \
+    --publish $HTTP_PORT:8888 \
     --publish $SSH_PORT:22 \
     --env DISPLAY=$DISPLAY \
     --env XAUTHORITY=$XAUTH \
