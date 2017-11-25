@@ -25,10 +25,12 @@ USE_GPU=$4
 if [ "$USE_GPU" = "gpu" ]
 then
     echo "use gpu image"
+    CONTAINER_NAME="condad-gpu"
     IMAGE="allenyllee/condad-gpu:latest" # gpu support image
     SSH_PORT=67 # gpu ssh port
 else
     echo "use cpu image"
+    CONTAINER_NAME="condad"
     IMAGE="allenyllee/condad:latest"  #default image (cpu only)
     SSH_PORT=66 # default ssh port
 fi
@@ -87,9 +89,12 @@ tr '\000' '\n' < ~/.profile | sudo tee ~/.profile >/dev/null
 echo "XAUTH_DIR=/tmp/.docker.xauth; XAUTH=\$XAUTH_DIR/.xauth; touch \$XAUTH; xauth nlist \$DISPLAY | sed -e 's/^..../ffff/' | xauth -f \$XAUTH nmerge -" >> ~/.profile
 source ~/.profile
 
-
+# remove previous container
+nvidia-docker stop $CONTAINER_NAME && \
+nvidia-docker rm $CONTAINER_NAME && \
+`# run new container` && \
 nvidia-docker run -ti \
-    --name anaconda \
+    --name $CONTAINER_NAME \
     --publish $PORT:8888 \
     --publish $SSH_PORT:22 \
     --env DISPLAY=$DISPLAY \
