@@ -2,7 +2,7 @@
 
 # Usage
 #
-# ./run_condad.sh [port] [password] [notebook_dir]
+# ./run_condad.sh [port] [password] [notebook_dir] [use_gpu]
 #
 #     [port] is the local port you want to open to access jupyter notebook
 #     [password] is the password of your jupyter notebook.
@@ -10,9 +10,24 @@
 #     After container started, just open URL http://localhost:[port]
 #
 
+
 PORT=$1
 PSWD=$2
 NOTEBOOK_DIR=$3
+USE_GPU=$4
+
+
+if [ "$USE_GPU" = "gpu" ]
+then
+    echo "use gpu image"
+    IMAGE="allenyllee/condad-gpu:latest" # gpu support image
+    SSH_PORT=67 # gpu ssh port
+else
+    echo "use cpu image"
+    IMAGE="allenyllee/condad:latest"  #default image (cpu only)
+    SSH_PORT=66 # default ssh port
+fi
+
 
 ##############################
 # run GUI app in docker with Xauthority file (without using xhost +local:root)
@@ -71,7 +86,7 @@ source ~/.profile
 nvidia-docker run -ti \
     --name anaconda \
     --publish $PORT:8888 \
-    --publish 66:22 \
+    --publish $SSH_PORT:22 \
     --env DISPLAY=$DISPLAY \
     --env XAUTHORITY=$XAUTH \
     --env PASSWORD=$PSWD \
@@ -80,4 +95,4 @@ nvidia-docker run -ti \
     --volume $NOTEBOOK_DIR:/opt/notebooks \
     `#--device /dev/video0:/dev/video0 # for webcam` \
     --restart always \
-    allenyllee/condad:latest
+    $IMAGE
