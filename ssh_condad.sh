@@ -20,7 +20,7 @@ else
     FORWARD_TO_LOCAL="-L $LOCAL_LISTEN_PORT:localhost:$REMOTE_PORT"
 fi
 
-#
+###############
 # ssh Command Line Options
 # https://www.attachmate.com/documentation/rsit-unix-802/rsit-unix-guide/data/ssh_options_ap.htm
 #
@@ -44,6 +44,7 @@ fi
 # data is sent in the clear between the Secure Shell host and the application server host.
 # You can also configure local forwarding in the configuration file using the LocalForward keyword.
 #
+###############
 # ssh(1): OpenSSH SSH client - Linux man page
 # https://linux.die.net/man/1/ssh
 #
@@ -53,7 +54,17 @@ fi
 # This must be used when ssh is run in the background. A common trick is to use this to run X11 programs on a remote machine.
 # For example, ssh -n shadows.cs.hut.fi emacs & will start an emacs on shadows.cs.hut.fi, and the X11 connection will be automatically forwarded over an encrypted channel. The ssh program will be put in the background. (This does not work if ssh needs to ask for a password or passphrase; see also the -f option.)
 #
+################
+# How to Port-Forward Jupyter Notebooks – Scott Hawley – Development Blog
+# https://drscotthawley.github.io/How-To-Port-Forward-Jupyter-Notebooks/
 #
+# The server we’ll call “doorkeeper” is visible to the outside world, and so we forward its port 8889 to the one over on “internal” where the notebook is running:
+# me@doorkeeper:~$ ssh -N -n -L 127.0.0.1:8889:127.0.0.1:8889 internal
+#
+# Then on my laptop, I run a similar port-forward so the browser will connected to the port on doorkeeper:
+# me@laptop:~$ ssh -N -n -L 127.0.0.1:8889:127.0.0.1:8889 doorkeeper
+#
+################
 # matplotlib - Can one remotely access an IPython Notebook without using inline plotting? - Stack Overflow
 # https://stackoverflow.com/questions/11462621/can-one-remotely-access-an-ipython-notebook-without-using-inline-plotting
 #
