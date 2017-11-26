@@ -71,4 +71,12 @@ fi
 # Note that I've forwarded port 8889 - this means I use http://localhost:8889/ in a browser on my at-home machine.
 # For me, this works nicely with the Qt4Agg backend.
 #
+# bash - "su" with error "X11 connection rejected because of wrong authentication" - Unix & Linux Stack Exchange
+# https://unix.stackexchange.com/questions/110558/su-with-error-x11-connection-rejected-because-of-wrong-authentication/118295
+#
+# To fix things, firstly detect which display number standarduser uses:
+# In this case it is 21.0. Secondly, display standarduser's list of cookies:
+# The cookie for the 21.0 display is the second in the list and ends with 104f.
+# The last thing to do is to add this particular cookie to the root's .Xauthority. Log in as root and do the following:
+#
 ssh -X -t $FORWARD_TO_LOCAL $USER@$ADDR -p $SSH_PORT "XAUTH_DIR=/tmp/.docker.xauth; XAUTH=\$XAUTH_DIR/.xauth; touch \$XAUTH; echo \$XAUTH;echo \$DISPLAY; xauth nlist \$DISPLAY | sed -e 's/^..../ffff/' | xauth -f \$XAUTH nmerge -;bash"
