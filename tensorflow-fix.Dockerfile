@@ -1,120 +1,95 @@
 FROM allenyllee/anaconda3-fix
 
+#
+# tensorflow/Dockerfile.gpu at master · tensorflow/tensorflow
+# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/tools/docker/Dockerfile.gpu
 # 
-# tensorflow/Dockerfile.devel-gpu-cuda9-cudnn7 at master · tensorflow/tensorflow
-# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/tools/docker/Dockerfile.devel-gpu-cuda9-cudnn7
-# 
 
-LABEL maintainer="Gunhan Gulsoy <gunan@google.com>"
+LABEL maintainer="Craig Citro <craigcitro@google.com>"
 
-# It is possible to override these for releases.
-ARG TF_BRANCH=master
-ARG BAZEL_VERSION=0.15.0
-ARG TF_AVAILABLE_CPUS=32
+# # Pick up some TF dependencies
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#         build-essential \
+#         cuda-command-line-tools-9-0 \
+#         cuda-cublas-9-0 \
+#         cuda-cufft-9-0 \
+#         cuda-curand-9-0 \
+#         cuda-cusolver-9-0 \
+#         cuda-cusparse-9-0 \
+#         curl \
+#         libcudnn7=7.1.4.18-1+cuda9.0 \
+#         libnccl2=2.2.13-1+cuda9.0 \
+#         libfreetype6-dev \
+#         libhdf5-serial-dev \
+#         libpng12-dev \
+#         libzmq3-dev \
+#         pkg-config \
+#         python \
+#         python-dev \
+#         python3-pip \
+#         python3-dev \
+#         python-virtualenv \
+#         rsync \
+#         software-properties-common \
+#         unzip \
+#         && \
+#     apt-get clean && \
+#     rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        build-essential \
-        curl \
-        git \
-        golang \
-        libcurl3-dev \
-        libfreetype6-dev \
-        libpng12-dev \
-        libzmq3-dev \
-        pkg-config \
-        python-dev \
-        python-pip \
-        rsync \
-        software-properties-common \
-        unzip \
-        zip \
-        zlib1g-dev \
-        openjdk-8-jdk \
-        openjdk-8-jre-headless \
-        wget \
-        && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN ln -s -f /usr/bin/python3 /usr/bin/python
 
-RUN pip --no-cache-dir install --upgrade \
-        pip setuptools
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python get-pip.py && \
+    pip -V && \
+    rm get-pip.py
 
 RUN pip --no-cache-dir install \
+        Pillow \
+        h5py \
         ipykernel \
         jupyter \
         matplotlib \
         numpy \
+        pandas \
         scipy \
         sklearn \
-        pandas \
-        wheel \
         && \
     python -m ipykernel.kernelspec
 
+# --- DO NOT EDIT OR DELETE BETWEEN THE LINES --- #
+# These lines will be edited automatically by parameterized_docker_build.sh. #
+# COPY _PIP_FILE_ /
+# RUN pip --no-cache-dir install /_PIP_FILE_
+# RUN rm -f /_PIP_FILE_
+
+
+# Install TensorFlow GPU version.
+RUN pip --no-cache-dir install \
+    https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-1.10.0-cp36-cp36m-linux_x86_64.whl
+# --- ~ DO NOT EDIT OR DELETE BETWEEN THE LINES --- #
+
+
+
+
 # Set up our notebook config.
-COPY jupyter_notebook_config.py /root/.jupyter/
+#COPY jupyter_notebook_config.py /root/.jupyter/
+
+# Copy sample notebooks.
+#COPY notebooks /notebooks
 
 # Jupyter has issues with being run directly:
 #   https://github.com/ipython/ipython/issues/7062
 # We just add a little wrapper script.
-COPY run_jupyter.sh /
+#COPY run_jupyter.sh /
 
-# Set up Bazel.
-
-# Running bazel inside a `docker build` command causes trouble, cf:
-#   https://github.com/bazelbuild/bazel/issues/134
-# The easiest solution is to set up a bazelrc file forcing --batch.
-RUN echo "startup --batch" >>/etc/bazel.bazelrc
-# Similarly, we need to workaround sandboxing issues:
-#   https://github.com/bazelbuild/bazel/issues/418
-RUN echo "build --spawn_strategy=standalone --genrule_strategy=standalone" \
-    >>/etc/bazel.bazelrc
-WORKDIR /
-RUN mkdir /bazel && \
-    cd /bazel && \
-    wget --quiet https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh && \
-    wget --quiet https://raw.githubusercontent.com/bazelbuild/bazel/master/LICENSE && \
-    chmod +x bazel-*.sh && \
-    ./bazel-$BAZEL_VERSION-installer-linux-x86_64.sh && \
-    rm -f /bazel/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
-
-# Download and build TensorFlow.
-WORKDIR /
-RUN git clone https://github.com/tensorflow/tensorflow.git && \
-    cd tensorflow && \
-    git checkout ${TF_BRANCH}
-WORKDIR /tensorflow
-
-# Configure the build for our CUDA configuration.
-ENV CI_BUILD_PYTHON=python \
-    LD_LIBRARY_PATH=/usr/local/cuda/extras/CUPTI/lib64:${LD_LIBRARY_PATH} \
-    CUDNN_INSTALL_PATH=/usr/lib/x86_64-linux-gnu \
-    PYTHON_BIN_PATH=/usr/bin/python \
-    PYTHON_LIB_PATH=/usr/local/lib/python2.7/dist-packages \
-    TF_NEED_CUDA=1 \
-    TF_CUDA_VERSION=9.0 \
-    TF_CUDA_COMPUTE_CAPABILITIES=3.0,3.5,5.2,6.0,6.1,7.0 \
-    TF_CUDNN_VERSION=7
-RUN ./configure
-
-# Build and Install TensorFlow.
-RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
-    LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs:${LD_LIBRARY_PATH} \
-    bazel build -c opt \
-                --config=cuda \
-                --cxxopt="-D_GLIBCXX_USE_CXX11_ABI=0" \
-                --jobs=${TF_AVAILABLE_CPUS} \
-                tensorflow/tools/pip_package:build_pip_package && \
-    mkdir /pip_pkg && \
-    bazel-bin/tensorflow/tools/pip_package/build_pip_package /pip_pkg && \
-    pip --no-cache-dir install --upgrade /pip_pkg/tensorflow-*.whl && \
-    rm -rf /pip_pkg && \
-    rm -rf /root/.cache
-# Clean up pip wheel and Bazel cache when done.
-
-WORKDIR /root
+# For CUDA profiling, TensorFlow requires CUPTI.
+ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
 
 # TensorBoard
 EXPOSE 6006
 # IPython
 EXPOSE 8888
+
+#WORKDIR "/notebooks"
+
+#CMD ["/run_jupyter.sh", "--allow-root"]
