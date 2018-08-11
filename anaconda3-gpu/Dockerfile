@@ -1,4 +1,4 @@
-FROM allenyllee/cuda90
+FROM allenyllee/cuda90-fix
 
 #
 # docker-images/Dockerfile at master · ContinuumIO/docker-images
